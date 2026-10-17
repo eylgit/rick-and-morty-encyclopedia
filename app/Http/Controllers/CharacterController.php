@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CharacterListRequest;
 use App\RickAndMorty\ApiClient;
 use App\RickAndMorty\CharacterPage;
+use App\RickAndMorty\NotFoundException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -27,6 +28,21 @@ final class CharacterController extends Controller
             'filters' => $filters,
             // Page links carry only the validated filters, never the raw query string.
             'paginator' => $this->paginatorFor($result, $request->url())->appends($filters),
+        ]);
+    }
+
+    public function show(int $id): View
+    {
+        try {
+            $character = $this->api->character($id);
+        } catch (NotFoundException) {
+            abort(404, "Character {$id} does not exist.");
+        }
+
+        return view('characters.show', [
+            'character' => $character,
+            // All episodes in one API call; none at all if the character has no episodes.
+            'episodes' => $this->api->episodes($character->episodeIds),
         ]);
     }
 

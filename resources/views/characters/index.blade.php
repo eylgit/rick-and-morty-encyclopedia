@@ -59,7 +59,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3 mb-4">
             @foreach ($result->characters as $character)
                 <div class="col">
-                    <a href="{{ url('/characters/' . $character->id) }}" class="card h-100 text-decoration-none text-body">
+                    <a href="{{ route('characters.show', $character->id) }}" class="card h-100 text-decoration-none text-body">
                         <img src="{{ $character->image }}" class="card-img-top" alt="{{ $character->name }}" loading="lazy">
                         <div class="card-body">
                             <h2 class="h6 card-title mb-1">{{ $character->name }}</h2>

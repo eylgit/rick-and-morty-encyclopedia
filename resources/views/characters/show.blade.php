@@ -1,0 +1,58 @@
+@extends('layouts.app')
+
+@section('title', $character->name)
+
+@section('content')
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('characters.index') }}">Characters</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $character->name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-12 col-md-4 col-lg-3">
+            <img src="{{ $character->image }}" class="img-fluid rounded shadow-sm" alt="{{ $character->name }}">
+        </div>
+
+        <div class="col-12 col-md-8 col-lg-9">
+            <h1 class="h2 mb-3">{{ $character->name }}</h1>
+
+            <dl class="row mb-4">
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">{{ $character->status }}</dd>
+
+                <dt class="col-sm-3">Species</dt>
+                <dd class="col-sm-9">{{ $character->species }}@if ($character->type !== '') <span class="text-muted">({{ $character->type }})</span>@endif</dd>
+
+                <dt class="col-sm-3">Gender</dt>
+                <dd class="col-sm-9">{{ $character->gender }}</dd>
+
+                <dt class="col-sm-3">Origin</dt>
+                <dd class="col-sm-9">{{ $character->origin }}</dd>
+
+                <dt class="col-sm-3">Last known location</dt>
+                <dd class="col-sm-9">{{ $character->location }}</dd>
+            </dl>
+
+            <h2 class="h5">
+                Episodes
+                <span class="badge text-bg-secondary fw-normal">{{ count($episodes) }} {{ count($episodes) === 1 ? 'episode' : 'episodes' }}</span>
+            </h2>
+
+            @if ($episodes === [])
+                <p class="text-muted">No episodes recorded for this character.</p>
+            @else
+                <ul class="list-group list-group-flush">
+                    @foreach ($episodes as $episode)
+                        <li class="list-group-item px-0 d-flex gap-3">
+                            <code class="text-nowrap">{{ $episode->code }}</code>
+                            <span>{{ $episode->name }}</span>
+                            <span class="ms-auto text-muted small text-nowrap">{{ $episode->airDate }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+    </div>
+@endsection

@@ -100,6 +100,7 @@ final class CharacterShowTest extends TestCase
             self::API.'/episode/*' => Http::response([$this->episodeData(1, 'Pilot', 'S01E01')]),
         ]);
 
-        $this->get('/characters/1')->assertSee('href="http://localhost/characters"', false);
+        // route() builds the absolute URL from APP_URL, the same way the view does.
+        $this->get('/characters/1')->assertSee('href="'.route('characters.index').'"', false);
     }
 }

@@ -5,19 +5,25 @@ every test starts with `Http::fake([...])`, which answers each URL pattern with 
 records what was sent. Feature tests use the same fake, so the real client code runs end to end.
 One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 
-## Unit: ApiClient (tests/Unit/ApiClientTest.php)
+## Unit: ApiClient (tests/Unit/RickAndMorty/ApiClientTest.php)
 
 | ID | Given | Then |
 |---|---|---|
-| T1 | `characters(page: 2)` | `Http::assertSent` sees `https://rickandmortyapi.com/api/character?page=2` |
-| T2 | `characters(name: "rick morty", status: "alive")` | query is URL-encoded; empty filters are omitted |
-| T3 | Any page and filter combination (data provider) | URL contains exactly the given params, nothing else |
-| T4 | 200 with a valid list body | returns `CharacterPage` with 20 `Character` objects and `pages` count |
-| T5 | 404 with `{"error":"There is nothing here"}` | returns empty `CharacterPage`, no exception |
+| T1 | `characters(page: 2)` | request URL is `https://rickandmortyapi.com/api/character?page=2` |
+| T1b | any request | sends `Accept: application/json` and a `User-Agent` |
+| T2 | `characters(1, ['name' => 'rick morty', 'status' => 'alive', 'gender' => '', 'species' => null])` | query is `page, name, status` only; empty values dropped |
+| T3 | page and filter combinations (data provider) | query contains exactly the given keys; unknown keys are not forwarded; whitespace-only values dropped |
+| T4 | 200 with a valid list body | `CharacterPage` with 20 `Character` objects, `page`, `pages`, `count`; fields mapped; episode URLs become ids |
+| T4b | page 42 of 42 | `hasPrevious()` true, `hasNext()` false |
+| T5 | 404 with `{"error":"There is nothing here"}` | empty `CharacterPage`, no exception |
 | T6 | 429 | throws `RateLimitedException` |
-| T7 | 500, or body that is not JSON, or JSON missing `results` | throws `ApiException` |
-| T8 | fake throws a `ConnectionException` (timeout) | throws `ApiException` with the cause |
-| T9 | `episodes([1, 2, 3])` | one request to `/episode/1,2,3`; `episodes([1])` still returns a list |
+| T7 | 500, 503, 403, non-JSON body, JSON missing `results` or `info` (data provider) | throws `ApiException` |
+| T8 | connection failure (timeout) | throws `ApiException` with `ConnectionException` as previous |
+| T9 | `episodes([1, 2, 3])` | one request to `/episode/1,2,3`; three `Episode` objects with id, name, code, airDate |
+| T9b | `episodes([7])` and API returns one object | still returns a list of one |
+| T9c | `episodes([])` | returns `[]`, no request sent |
+| T10 | `character(1)` | request to `/character/1`; `Character` mapped |
+| T11 | `character(999999)` and API returns 404 | throws `NotFoundException` |
 
 ## Feature: list page (tests/Feature/CharacterListTest.php)
 

@@ -1,5 +1,7 @@
 <?php
 
+use App\RickAndMorty\ApiException;
+use App\RickAndMorty\RateLimitedException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,4 +20,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Any failure talking to the Rick and Morty API becomes one friendly 503 page.
+        // The detail (status code, cURL message) goes to the log, not to the visitor.
+        $exceptions->render(fn (ApiException $e) => response()->view('errors.api-unavailable', [
+            'rateLimited' => $e instanceof RateLimitedException,
+        ], 503));
     })->create();

@@ -32,5 +32,8 @@ Documented filter values: `status` = alive, dead, unknown; `gender` = female, ma
 - Every response is served through Cloudflare with `cache-control: public, max-age=7776000,
   immutable` (90 days), and common pages come back as cache hits. The data set is effectively
   static.
-- Consequence: a short server-side cache on our side is enough to keep request volume low, and
-  an HTTP 429, if it ever comes, is handled as "try again shortly" rather than retried.
+- The limit is real: during ordinary browsing on 2026-10-17 (a few dozen requests within a few
+  minutes from one IP) the API answered `429` for the list endpoint. It cleared within a minute.
+  No `Retry-After` header could be captured.
+- Consequence: a server-side cache keeps our request volume low, and an HTTP 429 is shown to the
+  visitor as "try again shortly" rather than retried, since retrying a rate limit makes it worse.

@@ -8,8 +8,10 @@ use App\Http\Requests\CharacterListRequest;
 use App\RickAndMorty\ApiClient;
 use App\RickAndMorty\CharacterPage;
 use App\RickAndMorty\NotFoundException;
+use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 
 final class CharacterController extends Controller
 {
@@ -20,8 +22,15 @@ final class CharacterController extends Controller
 
     public function index(CharacterListRequest $request): View
     {
+        $page = $request->page();
         $filters = $request->filters();
-        $result = $this->api->characters($request->page(), $filters);
+
+        // The key is built from validated input in a fixed order, so the same search
+        // written in a different parameter order, or with empty fields, hits the same entry.
+        $result = $this->remember(
+            'list:'.http_build_query(['page' => $page] + $filters),
+            fn () => $this->api->characters($page, $filters),
+        );
 
         return view('characters.index', [
             'result' => $result,
@@ -34,7 +43,7 @@ final class CharacterController extends Controller
     public function show(int $id): View
     {
         try {
-            $character = $this->api->character($id);
+            $character = $this->remember("character:{$id}", fn () => $this->api->character($id));
         } catch (NotFoundException) {
             abort(404, "Character {$id} does not exist.");
         }
@@ -42,8 +51,20 @@ final class CharacterController extends Controller
         return view('characters.show', [
             'character' => $character,
             // All episodes in one API call; none at all if the character has no episodes.
-            'episodes' => $this->api->episodes($character->episodeIds),
+            'episodes' => $this->remember(
+                'episodes:'.implode(',', $character->episodeIds),
+                fn () => $this->api->episodes($character->episodeIds),
+            ),
         ]);
+    }
+
+    /**
+     * Reuse a stored API answer, or fetch and store it. An exception thrown by the
+     * fetch leaves nothing in the cache, so a failure is never remembered.
+     */
+    private function remember(string $key, Closure $fetch): mixed
+    {
+        return Cache::remember('rickandmorty:'.$key, config('rickandmorty.cache_seconds'), $fetch);
     }
 
     /**

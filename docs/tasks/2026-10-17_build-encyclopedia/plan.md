@@ -1,6 +1,6 @@
 # Plan: build the Rick and Morty Encyclopedia
 
-Status: **draft v1, not started**. Companion file: [test-cases.md](test-cases.md).
+Status: **steps 0-7 done; step 8 in progress** (2026-10-17). Companion file: [test-cases.md](test-cases.md).
 
 ## Goal
 
@@ -9,11 +9,11 @@ filters, and shows a detail page per character. Runnable from a clean clone with
 
 ## Exit criteria for the whole task
 
-- [ ] `/characters` lists characters, 20 per page, with working page links.
-- [ ] Search by name and filters (status, gender, species) work and survive a browser refresh.
-- [ ] `/characters/{id}` shows image, name, species, origin and episode names.
-- [ ] Empty results, invalid input, API timeout, API 5xx and API 429 each render a friendly page, never a 500.
-- [ ] `php artisan test` is green. CI workflow is green.
+- [x] `/characters` lists characters, 20 per page, with working page links.
+- [x] Search by name and filters (status, gender, species) work and survive a browser refresh.
+- [x] `/characters/{id}` shows image, name, species, origin and episode names.
+- [x] Empty results, invalid input, API timeout, API 5xx and API 429 each render a friendly page, never a 500.
+- [x] `php artisan test` is green. CI workflow is green.
 - [ ] `docker compose up` on a clean clone serves the app on `http://localhost:8000`.
 - [ ] README has: run steps, decisions, what was left out, known limits, AI usage.
 

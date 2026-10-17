@@ -87,16 +87,3 @@ decision with its own cost; none was asked for.
 - `php artisan serve` (also used in the Docker image) is a development server. Production would
   run php-fpm behind nginx, with `APP_DEBUG=false` and a shared cache such as Redis
   (one `.env` change: `CACHE_STORE=redis`).
-
-## Where AI helped, and where I overrode it
-
-I used an AI assistant throughout, in the order plan, test list, tests, code, docs, and the commit
-history shows that order. The plan and the test list were agreed before any code; the AI drafted
-test code and application code from them and I reviewed every file. I changed its first design
-twice: the API client was going to be raw cURL behind a custom interface, and I replaced that
-with Laravel's own HTTP client because the brief's rule is about who writes the communication,
-not which library carries it; and `NotFoundException` was first a kind of `ApiException`, which
-would have shown "API unavailable" for a missing character, so I split it out. One bug reached
-the browser that the suite had not caught (cached objects refused by Laravel 13's unserialize
-allow-list); it was reproduced in the suite before being fixed, and the test cache now serializes
-so that class of bug cannot return.

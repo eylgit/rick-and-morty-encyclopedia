@@ -15,6 +15,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\RickAndMortyFixtures;
 use Tests\TestCase;
 
 /**
@@ -23,7 +24,9 @@ use Tests\TestCase;
  */
 final class ApiClientTest extends TestCase
 {
-    private const BASE = 'https://rickandmortyapi.com/api';
+    use RickAndMortyFixtures;
+
+    private const BASE = self::API;
 
     // ---------------------------------------------------------------- T1-T3: what we send
 
@@ -122,7 +125,7 @@ final class ApiClientTest extends TestCase
 
     public function test_t5_404_on_the_list_means_no_results_not_an_error(): void
     {
-        Http::fake([self::BASE.'/character*' => Http::response(['error' => 'There is nothing here'], 404)]);
+        Http::fake([self::BASE.'/character*' => Http::response($this->nothingHere(), 404)]);
 
         $page = $this->client()->characters(1, ['name' => 'nobody']);
 
@@ -247,52 +250,5 @@ final class ApiClientTest extends TestCase
     private function client(): ApiClient
     {
         return new ApiClient(self::BASE, timeout: 5);
-    }
-
-    /** One character in the exact shape the API returns. */
-    private function characterData(int $id, string $name): array
-    {
-        return [
-            'id' => $id,
-            'name' => $name,
-            'status' => 'Alive',
-            'species' => 'Human',
-            'type' => '',
-            'gender' => 'Male',
-            'origin' => ['name' => 'Earth (C-137)', 'url' => self::BASE.'/location/1'],
-            'location' => ['name' => 'Citadel of Ricks', 'url' => self::BASE.'/location/3'],
-            'image' => "https://rickandmortyapi.com/api/character/avatar/{$id}.jpeg",
-            'episode' => [self::BASE.'/episode/1', self::BASE.'/episode/2'],
-            'url' => self::BASE."/character/{$id}",
-            'created' => '2017-11-04T18:48:46.250Z',
-        ];
-    }
-
-    /** One episode in the exact shape the API returns. */
-    private function episodeData(int $id, string $name, string $code): array
-    {
-        return [
-            'id' => $id,
-            'name' => $name,
-            'air_date' => 'December 2, 2013',
-            'episode' => $code,
-            'characters' => [self::BASE.'/character/1'],
-            'url' => self::BASE."/episode/{$id}",
-            'created' => '2017-11-10T12:56:33.798Z',
-        ];
-    }
-
-    /** A list page in the exact shape the API returns. */
-    private function pageBody(int $results = 20, int $pages = 42, int $count = 826): array
-    {
-        $list = [];
-        for ($i = 1; $i <= $results; $i++) {
-            $list[] = $this->characterData($i, "Character {$i}");
-        }
-
-        return [
-            'info' => ['count' => $count, 'pages' => $pages, 'next' => null, 'prev' => null],
-            'results' => $list,
-        ];
     }
 }

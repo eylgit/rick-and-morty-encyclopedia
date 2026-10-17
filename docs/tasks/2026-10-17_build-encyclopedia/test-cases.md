@@ -51,7 +51,7 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 | ID | Request | Then |
 |---|---|---|
 | D1 | `GET /characters/1` | 200 with image URL, name, species, origin, episode names |
-| D2 | `GET /characters/999999` (API 404) | 404 page |
+| D2 | `GET /characters/999999` (API 404) | 404 page naming the character id |
 | D3 | `GET /characters/abc` | 404, `Http::assertNothingSent` |
 | D4 | Character with 51 episodes | one episode request, with all 51 ids |
 
@@ -59,11 +59,15 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 
 | ID | Given | Then |
 |---|---|---|
-| E1 | Fake throws `ConnectionException` | 503 page "could not reach the API", not a 500 |
-| E2 | Fake returns 429 | 503 page "API is busy, try again shortly" |
-| E3 | Fake returns 500 | 503 page |
+| E1 | Fake throws `ConnectionException` | 503 page "not responding", no cURL text leaks |
+| E2 | Fake returns 429 | 503 page "Too many requests" |
+| E3 | Fake returns 500, 502, or non-JSON (data provider) | 503 page on list and detail |
+| E3b | Error page | links back to the list |
 | E4 | Same list URL requested twice | `Http::assertSentCount(1)` (cache hit) |
-| E5 | Two URLs differing only in param order | `Http::assertSentCount(1)` (key normalisation) |
+| E4b | Two different pages | two calls (cached separately) |
+| E4c | Detail page twice | two calls, not four |
+| E5 | Same filters in different URL order, with or without empty params | one call (key normalisation) |
+| E5b | First call fails, second succeeds | failure is not cached; second call reaches the API |
 
 ## Live smoke (tests/Live/LiveApiTest.php, skipped unless `RM_LIVE_TEST=1`)
 

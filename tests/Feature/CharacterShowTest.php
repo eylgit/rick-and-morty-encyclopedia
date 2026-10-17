@@ -45,7 +45,9 @@ final class CharacterShowTest extends TestCase
             self::API.'/character/999999' => Http::response(['error' => 'Character not found'], 404),
         ]);
 
-        $this->get('/characters/999999')->assertStatus(404);
+        $this->get('/characters/999999')
+            ->assertStatus(404)
+            ->assertSee('Character 999999 does not exist');
     }
 
     public function test_d3_non_numeric_id_is_a_404_without_calling_the_api(): void

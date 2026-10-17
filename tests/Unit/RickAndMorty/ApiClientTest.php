@@ -166,6 +166,9 @@ final class ApiClientTest extends TestCase
             'body is not JSON' => ['<html>oops</html>', 200],
             'JSON without results' => [['info' => ['count' => 1, 'pages' => 1]], 200],
             'JSON without info' => [['results' => []], 200],
+            'results row is not an object' => [['info' => ['count' => 1, 'pages' => 1], 'results' => ['oops']], 200],
+            'results row without id' => [['info' => ['count' => 1, 'pages' => 1], 'results' => [['name' => 'x']]], 200],
+            'episode field is not a list' => [['info' => ['count' => 1, 'pages' => 1], 'results' => [['id' => 1, 'name' => 'x', 'episode' => 'nope']]], 200],
         ];
     }
 
@@ -211,6 +214,24 @@ final class ApiClientTest extends TestCase
 
         $this->assertCount(1, $episodes);
         $this->assertSame(7, $episodes[0]->id);
+    }
+
+    public function test_t9d_404_on_episodes_is_an_api_error_not_a_crash(): void
+    {
+        Http::fake([self::BASE.'/episode/*' => Http::response(['error' => 'Episode not found'], 404)]);
+
+        $this->expectException(ApiException::class);
+
+        $this->client()->episodes([1, 2]);
+    }
+
+    public function test_t9e_malformed_episode_rows_are_an_api_error(): void
+    {
+        Http::fake([self::BASE.'/episode/*' => Http::response(['oops', 42])]);
+
+        $this->expectException(ApiException::class);
+
+        $this->client()->episodes([1, 2]);
     }
 
     public function test_t9c_no_episode_ids_means_no_request(): void

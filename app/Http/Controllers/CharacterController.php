@@ -19,11 +19,14 @@ final class CharacterController extends Controller
 
     public function index(CharacterListRequest $request): View
     {
-        $result = $this->api->characters($request->page());
+        $filters = $request->filters();
+        $result = $this->api->characters($request->page(), $filters);
 
         return view('characters.index', [
             'result' => $result,
-            'paginator' => $this->paginatorFor($result, $request->url()),
+            'filters' => $filters,
+            // Page links carry only the validated filters, never the raw query string.
+            'paginator' => $this->paginatorFor($result, $request->url())->appends($filters),
         ]);
     }
 

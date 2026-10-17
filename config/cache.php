@@ -1,5 +1,8 @@
 <?php
 
+use App\RickAndMorty\Character;
+use App\RickAndMorty\CharacterPage;
+use App\RickAndMorty\Episode;
 use Illuminate\Support\Str;
 
 return [
@@ -36,7 +39,8 @@ return [
 
         'array' => [
             'driver' => 'array',
-            'serialize' => false,
+            // Serialize like the file store does, so tests catch objects the cache cannot restore.
+            'serialize' => true,
         ],
 
         'database' => [
@@ -131,6 +135,11 @@ return [
     |
     */
 
-    'serializable_classes' => false,
+    // Only these classes may come back out of the cache; everything else is refused.
+    'serializable_classes' => [
+        Character::class,
+        CharacterPage::class,
+        Episode::class,
+    ],
 
 ];

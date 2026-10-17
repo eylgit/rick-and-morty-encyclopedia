@@ -28,6 +28,10 @@ final class Character
             throw new ApiException('Character data from the API is missing "id" or "name".');
         }
 
+        if (isset($data['episode']) && ! is_array($data['episode'])) {
+            throw new ApiException('Character data from the API has a malformed "episode" list.');
+        }
+
         return new self(
             id: (int) $data['id'],
             name: (string) $data['name'],

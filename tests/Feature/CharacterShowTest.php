@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Tests\Support\RickAndMortyFixtures;
 use Tests\TestCase;
 
-/** Detail page. IDs D1..D4 match docs/tasks/.../test-cases.md. */
+/** Detail page. IDs D1..D5 match docs/tasks/.../test-cases.md. */
 final class CharacterShowTest extends TestCase
 {
     use RickAndMortyFixtures;

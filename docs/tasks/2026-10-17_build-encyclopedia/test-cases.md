@@ -17,11 +17,13 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 | T4b | page 42 of 42 | `hasPrevious()` true, `hasNext()` false |
 | T5 | 404 with `{"error":"There is nothing here"}` | empty `CharacterPage`, no exception |
 | T6 | 429 | throws `RateLimitedException` |
-| T7 | 500, 503, 403, non-JSON body, JSON missing `results` or `info` (data provider) | throws `ApiException` |
+| T7 | 500, 503, 403, non-JSON body, JSON missing `results` or `info`, a results row that is not an object or lacks `id`, an `episode` field that is not a list (data provider) | throws `ApiException` |
 | T8 | connection failure (timeout) | throws `ApiException` with `ConnectionException` as previous |
 | T9 | `episodes([1, 2, 3])` | one request to `/episode/1,2,3`; three `Episode` objects with id, name, code, airDate |
 | T9b | `episodes([7])` and API returns one object | still returns a list of one |
 | T9c | `episodes([])` | returns `[]`, no request sent |
+| T9d | `episodes([1, 2])` and API returns 404 | throws `ApiException` |
+| T9e | episode list rows are not objects | throws `ApiException` |
 | T10 | `character(1)` | request to `/character/1`; `Character` mapped |
 | T11 | `character(999999)` and API returns 404 | throws `NotFoundException` |
 
@@ -35,6 +37,7 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 | L4 | `GET /characters?page=999` (API 404) | 200 with "No characters found" |
 | L5 | `GET /` | redirects to `/characters` |
 | L6 | Page links on page 2 | contain `page=1` and `page=3` |
+| L6b | List page | each card links to `/characters/{id}` and shows the avatar image |
 
 ## Feature: search and filter (tests/Feature/CharacterSearchTest.php)
 
@@ -45,6 +48,9 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 | S3 | `?status=zombie` | 422 or redirect, never forwarded |
 | S4 | `?name=<script>alert(1)</script>` | HTML contains the escaped form, not the raw tag |
 | S5 | Page links while searching | keep `name=rick&status=alive` |
+| S5b | `?name=rick&evil=yes` | page links never carry `evil=yes` |
+| S5c | `?status=dead&gender=genderless` | both dropdowns keep their selection |
+| S6 | search with no match | "No characters found" plus a "Clear the search" link |
 
 ## Feature: detail page (tests/Feature/CharacterShowTest.php)
 
@@ -54,6 +60,8 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 | D2 | `GET /characters/999999` (API 404) | 404 page naming the character id |
 | D3 | `GET /characters/abc` | 404, `Http::assertNothingSent` |
 | D4 | Character with 51 episodes | one episode request, with all 51 ids |
+| D4b | Character with no episodes | no episode request; page says "No episodes" |
+| D5 | Detail page | links back to the list |
 
 ## Feature: errors and cache (tests/Feature/ResilienceTest.php)
 
@@ -69,7 +77,7 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 | E5 | Same filters in different URL order, with or without empty params | one call (key normalisation) |
 | E5b | First call fails, second succeeds | failure is not cached; second call reaches the API |
 
-## Live smoke (tests/Live/LiveApiTest.php, skipped unless `RM_LIVE_TEST=1`)
+## Live smoke (tests/Feature/LiveApiTest.php, skipped unless `RM_LIVE_TEST=1`)
 
 | ID | Then |
 |---|---|

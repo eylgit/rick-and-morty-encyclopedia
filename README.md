@@ -8,7 +8,7 @@ Built for the PHP developer assessment in [docs/ASSESSMENT.md](docs/ASSESSMENT.m
 
 ## Run it
 
-Requires PHP 8.3+ and Composer. No database, no Node.
+Requires PHP 8.4+ and Composer. No database, no Node.
 
 ```bash
 composer install
@@ -70,8 +70,9 @@ More in `docs/reference/`: [architecture](docs/reference/architecture.md) ·
 - **No database.** The data lives in the API; a copy would add a sync problem and setup for no gain.
 - **Resilience:** timeouts, 429 and 5xx and malformed bodies all end on a friendly 503 page; a
   search with no match is an empty page, not an error; unknown ids are a proper 404.
-- **Input:** every query parameter is validated against a whitelist before any code runs; all
-  output is escaped by Blade; page links carry only validated parameters.
+- **Input:** the known query parameters are validated against whitelists before any code runs and
+  unknown ones are ignored; all output is escaped by Blade; page links carry only validated
+  parameters.
 
 ## Deliberately left out
 

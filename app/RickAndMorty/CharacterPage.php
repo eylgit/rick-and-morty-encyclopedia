@@ -19,7 +19,7 @@ final class CharacterPage
     public static function fromArray(array $data, int $page): self
     {
         return new self(
-            characters: array_map(fn (array $row) => Character::fromArray($row), $data['results']),
+            characters: array_map(fn ($row) => Character::fromArray(ApiClient::row($row, 'character')), $data['results']),
             page: $page,
             pages: (int) ($data['info']['pages'] ?? 0),
             count: (int) ($data['info']['count'] ?? 0),

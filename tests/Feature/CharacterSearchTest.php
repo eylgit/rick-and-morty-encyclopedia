@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\RickAndMortyFixtures;
 use Tests\TestCase;
 
-/** Search and filters on the list page. IDs S1..S5 match docs/tasks/.../test-cases.md. */
+/** Search and filters on the list page. IDs S1..S6 match docs/tasks/.../test-cases.md. */
 final class CharacterSearchTest extends TestCase
 {
     use RickAndMortyFixtures;

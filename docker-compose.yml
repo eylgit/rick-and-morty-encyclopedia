@@ -3,3 +3,7 @@ services:
     build: .
     ports:
       - "8000:8000"
+    environment:
+      # Real environment variables override .env: the reviewer's container never shows debug pages.
+      APP_ENV: production
+      APP_DEBUG: "false"

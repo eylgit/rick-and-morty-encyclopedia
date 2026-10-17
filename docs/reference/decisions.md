@@ -2,7 +2,7 @@
 
 | Decision | Chosen | Alternatives considered | Why |
 |---|---|---|---|
-| Framework | Laravel 13, thin use (routing, validation, Blade, cache, tests) | Plain PHP with a hand-rolled MVC; Slim | Gives validation, escaping, config and a test harness for free; the team's stack. Unused parts (database, auth, queues, Vite) are left untouched, not removed. |
+| Framework | Laravel 13, thin use (routing, validation, Blade, cache, tests) | Plain PHP with a hand-rolled MVC; Slim | Gives validation, escaping, config and a test harness for free; the team's stack. Unused parts (database, auth, queues) are left untouched; only the Node/Vite build files were removed. |
 | HTTP layer | Laravel's `Http` client, hand-written calls | Raw cURL behind a custom interface | The requirement is that the communication code is the candidate's, not that it avoids a generic HTTP library. `Http::fake()` gives network-free tests. |
 | Front end | Blade + Bootstrap 5 via CDN, no JavaScript | Vue + Inertia (team stack), React | Brief: front-end framework optional, functionality first. No Node step for the reviewer. State lives in the URL. |
 | Page model | Multi-page | Single-page app | Every click replaces the whole result set and must be bookmarkable; a server round trip is the natural unit. |

@@ -28,7 +28,7 @@ bootstrap/app.php ......................... any ApiException escaping the contro
 
 | Folder | Role |
 |---|---|
-| `app/RickAndMorty/` | Model layer. `ApiClient` plus three read-only data classes and two exceptions. Imports only Laravel's `Http` client. |
+| `app/RickAndMorty/` | Model layer. `ApiClient` plus three read-only data classes and three exceptions. Imports only Laravel's `Http` client. |
 | `app/Http/Requests/` | Validation. The request class also owns the allowed values for status and gender, which the view uses to draw dropdowns. |
 | `app/Http/Controllers/` | One controller, two actions, one private cache helper, one private paginator helper. |
 | `resources/views/` | `layouts/app` (Bootstrap shell), `characters/index`, `characters/show`, `errors/404`, `errors/api-unavailable`. |

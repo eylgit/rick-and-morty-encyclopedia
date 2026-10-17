@@ -79,14 +79,20 @@ final class ApiClient
             return [];
         }
 
-        $data = $this->decode($this->get('episode/'.implode(',', $ids)));
+        $response = $this->get('episode/'.implode(',', $ids));
+
+        if ($response->status() === 404) {
+            throw new ApiException('The Rick and Morty API has no episodes for ids '.implode(',', $ids).'.');
+        }
+
+        $data = $this->decode($response);
 
         // One id gives a single object, several give a list. Normalise to a list.
         if (isset($data['id'])) {
             $data = [$data];
         }
 
-        return array_map(fn (array $row) => Episode::fromArray($row), $data);
+        return array_map(fn ($row) => Episode::fromArray(self::row($row, 'episode')), $data);
     }
 
     /**
@@ -117,6 +123,20 @@ final class ApiClient
         }
 
         return $response;
+    }
+
+    /**
+     * A row of a list must itself be a JSON object; anything else means the API changed shape.
+     *
+     * @return array<string, mixed>
+     */
+    public static function row(mixed $row, string $what): array
+    {
+        if (! is_array($row)) {
+            throw new ApiException("A {$what} entry from the Rick and Morty API is not an object.");
+        }
+
+        return $row;
     }
 
     /** @return array<string, mixed> */

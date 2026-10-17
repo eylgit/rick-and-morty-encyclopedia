@@ -1,6 +1,6 @@
 # Plan: build the Rick and Morty Encyclopedia
 
-Status: **steps 0-7 done; step 8 in progress** (2026-10-17). Companion file: [test-cases.md](test-cases.md).
+Status: **done** (2026-10-17). Kept as the record of how the work was planned. Companion file: [test-cases.md](test-cases.md).
 
 ## Goal
 
@@ -14,8 +14,8 @@ filters, and shows a detail page per character. Runnable from a clean clone with
 - [x] `/characters/{id}` shows image, name, species, origin and episode names.
 - [x] Empty results, invalid input, API timeout, API 5xx and API 429 each render a friendly page, never a 500.
 - [x] `php artisan test` is green. CI workflow is green.
-- [ ] `docker compose up` on a clean clone serves the app on `http://localhost:8000`.
-- [ ] README has: run steps, decisions, what was left out, known limits, AI usage.
+- [x] `docker compose up` on a clean clone serves the app on `http://localhost:8000`.
+- [x] README has: run steps, decisions, what was left out, known limits.
 
 ## Decisions (short form; detail in `docs/reference/decisions.md` once built)
 
@@ -25,7 +25,7 @@ filters, and shows a detail page per character. Runnable from a clean clone with
 | Front end | Blade + Bootstrap 5 via CDN | Brief says front-end framework optional; no Node build step for the reviewer |
 | Page model | Multi-page, full page loads | State lives in the URL; bookmark, back, refresh and share work with no JS |
 | API client | Hand-written class using Laravel's HTTP client (`Http`) | Communication code is the candidate's own; `Http::fake()` makes it testable without network; retry and timeouts are one call each |
-| Cache | Laravel file cache, key = normalised API URL, TTL 10 min | Answers rate limit; never returns wrong data because the key contains every parameter |
+| Cache | Laravel file cache, key = validated page + filters in fixed order, TTL 1 h (revised from 10 min after observing the API's 90-day immutable headers) | Answers rate limit; never returns wrong data because the key contains every parameter |
 | Database | None | Data lives in the API; a copy would add sync and setup with no benefit for this scope |
 | Rate limit | Cache first; on HTTP 429 show "API busy" page; no automatic retry on 429 | Retrying a rate limit makes it worse |
 

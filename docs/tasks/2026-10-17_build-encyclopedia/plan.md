@@ -44,7 +44,7 @@ Each step: tests first, then code, then one commit. Stop after each step for rev
 | 6 | Detail page with episodes in one batch call | `/characters/1` shows Rick with episode names | Tests D1 to D4 pass |
 | 7 | Cache and error pages (timeout, 5xx, 429, empty) | Second load of a page makes no API call | Tests E1 to E5 pass |
 | 8 | Dockerfile, compose, CI workflow, README, `docs/reference` | Clean clone runs with `docker compose up` | Whole-task exit criteria ticked |
-| 9 | Review pass and private repo with collaborators invited | Reviewer can open the repo | Checklist in README verified |
+| 9 | Review pass, then publish the repository on GitHub and send the link | Reviewer can open the repo | Checklist in README verified |
 
 ## Wireframes
 

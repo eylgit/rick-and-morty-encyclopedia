@@ -24,7 +24,7 @@ filters, and shows a detail page per character. Runnable from a clean clone with
 | Framework | Laravel 13, used thinly | Team's stack; gives routing, validation, escaping, config, tests for free |
 | Front end | Blade + Bootstrap 5 via CDN | Brief says front-end framework optional; no Node build step for the reviewer |
 | Page model | Multi-page, full page loads | State lives in the URL; bookmark, back, refresh and share work with no JS |
-| API client | Hand-written, cURL, behind a one-method `HttpFetcher` interface | Testable without network; no framework dependency; could become a Composer package |
+| API client | Hand-written class using Laravel's HTTP client (`Http`) | Communication code is the candidate's own; `Http::fake()` makes it testable without network; retry and timeouts are one call each |
 | Cache | Laravel file cache, key = normalised API URL, TTL 10 min | Answers rate limit; never returns wrong data because the key contains every parameter |
 | Database | None | Data lives in the API; a copy would add sync and setup with no benefit for this scope |
 | Rate limit | Cache first; on HTTP 429 show "API busy" page; no automatic retry on 429 | Retrying a rate limit makes it worse |
@@ -38,7 +38,7 @@ Each step: tests first, then code, then one commit. Stop after each step for rev
 | 0 | Tooling: install PHP 8.3+ and Composer | `php -v` prints 8.3 or higher | Done 2026-10-17: PHP 8.5.11, Composer 2.10.3 |
 | 1 | Seed repo from the assessment repo, keep its commit as the first commit | `git log` shows the original commit then ours | Original README moved to `docs/ASSESSMENT.md` |
 | 2 | Laravel skeleton, Node files removed | `php artisan serve` shows the Laravel welcome page | Commit "Scaffold Laravel 13, drop front-end build" |
-| 3 | API client (written by the candidate): `HttpFetcher`, `CurlFetcher`, `ApiClient`, `Character`, `CharacterPage`, exceptions | `php artisan test --filter ApiClient` green | Unit tests T1 to T9 pass |
+| 3 | API client (written by the candidate): `ApiClient`, `Character`, `CharacterPage`, exceptions | `php artisan test --filter ApiClient` green | Unit tests T1 to T9 pass |
 | 4 | Character list page: route, controller, request validation, Blade view, pagination | Browser shows 20 characters and page links | Feature tests L1 to L6 pass |
 | 5 | Search and filters; pagination keeps the query | Search "rick" with status "alive" works; page 2 keeps the filter | Tests S1 to S5 pass |
 | 6 | Detail page with episodes in one batch call | `/characters/1` shows Rick with episode names | Tests D1 to D4 pass |

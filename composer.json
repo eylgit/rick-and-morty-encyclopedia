@@ -2,8 +2,8 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "eylgit/rick-and-morty-encyclopedia",
     "type": "project",
-    "description": "Rick and Morty character encyclopedia on the public API (PHP developer assessment).",
-    "keywords": ["laravel", "framework"],
+    "description": "Rick and Morty character browser on the public API: Laravel 13, hand-written API client, cached, fully tested.",
+    "keywords": ["laravel", "php", "rick-and-morty", "api-client"],
     "license": "MIT",
     "require": {
         "php": "^8.4",
@@ -54,11 +54,6 @@
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
         ],
         "pre-package-uninstall": [
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"

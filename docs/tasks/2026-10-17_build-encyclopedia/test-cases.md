@@ -33,7 +33,7 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 |---|---|---|
 | L1 | `GET /characters` | 200, 20 names in HTML, "Page 1 of N" |
 | L2 | `GET /characters?page=3` | `Http::assertSent` sees `page=3` |
-| L3 | `GET /characters?page=0` and `?page=abc` | 302 back to page 1 or 422, never a 500 |
+| L3 | `GET /characters?page=0` and `?page=abc` | 302 to `/characters`, no API call, never a 500 |
 | L4 | `GET /characters?page=999` (API 404) | 200 with "No characters found" |
 | L5 | `GET /` | redirects to `/characters` |
 | L6 | Page links on page 2 | contain `page=1` and `page=3` |
@@ -45,7 +45,7 @@ One optional live smoke test runs only when `RM_LIVE_TEST=1`.
 |---|---|---|
 | S1 | `?name=rick` | request sent with `name=rick`; input keeps the value "rick" |
 | S2 | `?status=alive&gender=female` | both forwarded |
-| S3 | `?status=zombie` | 422 or redirect, never forwarded |
+| S3 | `?status=zombie` | 302 to `/characters`, never forwarded |
 | S4 | `?name=<script>alert(1)</script>` | HTML contains the escaped form, not the raw tag |
 | S5 | Page links while searching | keep `name=rick&status=alive` |
 | S5b | `?name=rick&evil=yes` | page links never carry `evil=yes` |

@@ -147,6 +147,7 @@
     </main>
 
     <footer class="container pb-4 text-muted small site-footer">
+        Unofficial fan project, not affiliated with the show or its owners.
         Data from <a href="https://rickandmortyapi.com" class="link-secondary">rickandmortyapi.com</a>.
     </footer>
 </body>

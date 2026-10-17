@@ -1,7 +1,7 @@
 # Testing
 
 ```bash
-php artisan test                                   # 64 tests (1 skipped), no network
+php artisan test                                   # 69 tests (1 skipped), no network
 RM_LIVE_TEST=1 php artisan test --filter LiveApiTest   # one test against the real API
 vendor/bin/pint --test                             # code style
 ```

@@ -27,8 +27,8 @@ Documented filter values: `status` = alive, dead, unknown; `gender` = female, ma
 
 ## Rate limiting and caching
 
-- The assessment brief says the API is rate limited. The documentation page states no figure and
-  the responses carry no rate-limit headers.
+- The API is known to be rate limited, but the documentation page states no figure and the
+  responses carry no rate-limit headers.
 - Every response is served through Cloudflare with `cache-control: public, max-age=7776000,
   immutable` (90 days), and common pages come back as cache hits. The data set is effectively
   static.

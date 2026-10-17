@@ -4,7 +4,9 @@ A small Laravel 13 application that browses the characters of Rick and Morty thr
 [Rick and Morty API](https://rickandmortyapi.com): a paginated, searchable, filterable list and a
 detail page per character with the episodes they appear in.
 
-Built for the PHP developer assessment in [docs/ASSESSMENT.md](docs/ASSESSMENT.md).
+Requirements it was built to: a paginated, searchable, filterable character list; a detail page
+with image, species, origin and episodes; every API call hand-written against the REST API with no
+Rick-and-Morty-specific library; and sensible behaviour under the API's rate limit.
 
 ## Run it
 
@@ -31,7 +33,7 @@ docker compose up --build
 php artisan test
 ```
 
-64 tests, one of them skipped by default. None touch the network: every API answer is faked.
+69 tests, one of them skipped by default. None touch the network: every API answer is faked.
 The skipped one runs the client against the live API on demand:
 
 ```bash
@@ -50,7 +52,7 @@ Plain Laravel MVC, used thinly:
 | API client (all communication with the API, hand-written on Laravel's HTTP client) | [`app/RickAndMorty/`](app/RickAndMorty/) |
 | Input validation (page, name, status, species, gender) | [`app/Http/Requests/CharacterListRequest.php`](app/Http/Requests/CharacterListRequest.php) |
 | Controller: validated input in, API answer out, cached | [`app/Http/Controllers/CharacterController.php`](app/Http/Controllers/CharacterController.php) |
-| Views: Blade + Bootstrap 5 from a CDN | [`resources/views/`](resources/views/) |
+| Views: Blade + Bootstrap 5 and IBM Plex Sans from CDNs | [`resources/views/`](resources/views/) |
 | API failures become one 503 page | [`bootstrap/app.php`](bootstrap/app.php) |
 | Settings (base URL, timeout, cache lifetime) | [`config/rickandmorty.php`](config/rickandmorty.php), overridable in `.env` |
 
@@ -74,11 +76,11 @@ More in `docs/reference/`: [architecture](docs/reference/architecture.md) ·
   unknown ones are ignored; all output is escaped by Blade; page links carry only validated
   parameters.
 
-## Deliberately left out
+## Out of scope
 
 Authentication, database, Vue/Inertia, JavaScript pagination, browsing by episode or location,
-retry on rate limit (it would make the limit worse), static analysis. Each would be a separate
-decision with its own cost; none was asked for.
+retry on rate limit (it would make the limit worse), static analysis. Each adds setup, moving
+parts or load on a rate-limited API that this scope does not repay.
 
 ## Known limits
 
@@ -88,3 +90,8 @@ decision with its own cost; none was asked for.
 - `php artisan serve` (also used in the Docker image) is a development server. Production would
   run php-fpm behind nginx, with `APP_DEBUG=false` and a shared cache such as Redis
   (one `.env` change: `CACHE_STORE=redis`).
+
+## Licence and trademarks
+
+MIT, see [LICENSE](LICENSE). Unofficial fan project, not affiliated with the show or its owners;
+Rick and Morty is a trademark of its owners. Data from [rickandmortyapi.com](https://rickandmortyapi.com).

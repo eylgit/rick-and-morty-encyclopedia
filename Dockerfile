@@ -1,4 +1,4 @@
-# Runs the app with PHP's built-in server. Fine for review; production would
+# Runs the app with PHP's built-in server. Fine for local use and demos; production would
 # put php-fpm behind nginx instead.
 FROM php:8.4-cli-alpine
 

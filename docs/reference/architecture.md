@@ -46,6 +46,7 @@ response ................................. image/jpeg, Cache-Control public max-
 |---|---|
 | `app/RickAndMorty/` | Model layer. `ApiClient` plus three read-only data classes and three exceptions. Imports only Laravel's `Http` client. |
 | `app/Http/Requests/` | Validation. The request class also owns the allowed values for status and gender, which the view uses to draw dropdowns. |
+| `app/Console/Commands/` | `WarmAvatarCache`: `php artisan avatars:warm` fills the image cache one id a second, skipping cached ids, stopping on 429. |
 | `app/Http/Controllers/` | `CharacterController`: two actions, a private cache helper, a private paginator helper. `AvatarController`: one action that caches and serves image bytes. |
 | `resources/views/` | `layouts/app` (Bootstrap shell), `characters/index`, `characters/show`, `errors/404`, `errors/api-unavailable`. |
 | `config/rickandmorty.php` | Base URL, timeout, cache lifetimes (data 1 h, images 90 d). `config/cache.php` lists the three data classes the cache may restore. |
@@ -66,3 +67,9 @@ the same lifetime, so ordinary navigation sends no request at all, and a hard re
 conditional request that this app answers with 304 from the cache. Before this route existed the
 `<img>` tags pointed at the API's CDN, and a few dozen hard reloads from one browser earned a 429
 and broken images, because the CDN counts every revalidation.
+
+The cold path still fetches up to 20 images in a burst for a page nobody has opened, and the API
+has answered 429 to such bursts (80 in one afternoon's log, no other failure kind). The warm-up
+command takes that path away: it walks ids 1 to `info.count`, fetches the missing ones into the
+same cache entries at two requests a second, and exits non-zero on the first 429 so a re-run can
+continue from that id.

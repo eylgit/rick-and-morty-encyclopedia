@@ -21,6 +21,13 @@ php artisan serve
 
 Then open <http://localhost:8000>.
 
+Optional, once: fill the image cache so no page ever waits for the API's images or trips its
+rate limit. About 7 minutes, two requests a second; safe to re-run, it skips what it has.
+
+```bash
+php artisan avatars:warm
+```
+
 With Docker instead (nothing else installed):
 
 ```bash
@@ -33,7 +40,7 @@ docker compose up --build
 php artisan test
 ```
 
-83 tests, one of them skipped by default. None touch the network: every API answer is faked.
+89 tests, one of them skipped by default. None touch the network: every API answer is faked.
 The skipped one runs the client against the live API on demand:
 
 ```bash
@@ -60,7 +67,8 @@ More in `docs/reference/`: [architecture](docs/reference/architecture.md) ·
 [decisions](docs/reference/decisions.md) · [the API as observed](docs/reference/rick-and-morty-api.md) ·
 [testing](docs/reference/testing.md). The build plan and test list are in
 [docs/tasks/](docs/tasks/2026-10-17_build-encyclopedia/plan.md); the follow-up that moved images
-behind the app is in [docs/tasks/2026-10-28_proxy-avatars/](docs/tasks/2026-10-28_proxy-avatars/plan.md).
+behind the app is in [docs/tasks/2026-10-28_proxy-avatars/](docs/tasks/2026-10-28_proxy-avatars/plan.md),
+and the warm-up command in [docs/tasks/2026-10-28_warm-avatar-cache/](docs/tasks/2026-10-28_warm-avatar-cache/plan.md).
 
 ## Decisions in short
 
@@ -73,6 +81,8 @@ behind the app is in [docs/tasks/2026-10-28_proxy-avatars/](docs/tasks/2026-10-2
 - **Character images are served through the app** at `/avatars/{id}`: fetched from the API once,
   cached for 90 days, sent with `Cache-Control: immutable` and an `ETag`. A browser reload
   revalidates against this app and gets 304s; the API's rate limit never sees the images.
+  `php artisan avatars:warm` fills the cache in advance, two images a second, and stops on a 429
+  rather than pushing into a ban.
 - **No database.** The data lives in the API; a copy would add a sync problem and setup for no gain.
 - **Resilience:** timeouts, 429 and 5xx and malformed bodies all end on a friendly 503 page; a
   search with no match is an empty page, not an error; unknown ids are a proper 404.
@@ -89,7 +99,8 @@ parts or load on a rate-limited API that this scope does not repay.
 ## Known limits
 
 - The API's latency is the floor for a page nobody has viewed in the last hour.
-- Images pass through PHP on a cache miss and on every 304. In production the files would be
+- A page nobody has opened fetches up to 20 images in a burst, and the API has answered 429 to
+  such bursts; `avatars:warm` removes that path. Images pass through PHP on a cache miss and on every 304. In production the files would be
   written under `public/avatars/` so nginx serves them and the route only fills the gaps.
 - `php artisan serve` (also used in the Docker image) is a development server. Production would
   run php-fpm behind nginx, with `APP_DEBUG=false` and a shared cache such as Redis

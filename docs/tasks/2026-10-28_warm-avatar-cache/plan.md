@@ -1,6 +1,6 @@
 # Plan: warm the image cache from the command line
 
-Status: **planned** (2026-10-28). Companion file: [test-cases.md](test-cases.md).
+Status: **done** (2026-10-28). Kept as the record of how the work was planned. Companion file: [test-cases.md](test-cases.md).
 
 ## Why
 
@@ -12,16 +12,16 @@ visitor: fetch every image once, slowly, from the command line.
 
 ## Goal
 
-`php artisan avatars:warm` fills the same cache entries the controller reads, one image a second,
+`php artisan avatars:warm` fills the same cache entries the controller reads, two images a second,
 skipping what is already there, and stops on the first 429.
 
 ## Exit criteria
 
-- [ ] `php artisan avatars:warm` on an empty cache fetches every image the API has (count from the API) and prints fetched / already cached / failed counts.
-- [ ] A second run makes no API request for images and finishes at once.
-- [ ] A 429 stops the run with a non-zero exit code and a line saying where it stopped.
-- [ ] A 404 or a 5xx on one image is counted and the run continues.
-- [ ] `php artisan test` green; Pint clean; README and `docs/reference` updated.
+- [x] `php artisan avatars:warm` on an empty cache fetches every image the API has (count from the API) and prints fetched / already cached / failed counts.
+- [x] A second run makes no API request for images and finishes at once.
+- [x] A 429 stops the run with a non-zero exit code and a line saying where it stopped.
+- [x] A 404 or a 5xx on one image is counted and the run continues.
+- [x] `php artisan test` green; Pint clean; README and `docs/reference` updated.
 
 ## Decisions
 
@@ -29,7 +29,7 @@ skipping what is already there, and stops on the first 429.
 |---|---|---|
 | Which ids | 1 to `info.count`, read from page 1 of the character list through the existing client and cache | Ids are contiguous; a hard-coded 826 would break silently when the API grows |
 | Already cached | `Cache::has` before fetching; a hit is counted and skipped, no pause | A re-run after a restart or a partial run costs nothing |
-| Pace | One second between real fetches, a constant in the command | The log shows the limiter trips on bursts, not on a slow trickle |
+| Pace | Half a second between real fetches, a constant in the command (started at one second, halved after the first full run showed no 429) | The log shows the limiter trips on bursts, not on a slow trickle |
 | 429 | Stop, print the id reached, exit code 1 | Carrying on during a ban extends it; the next run starts where this one stopped, because of the skip rule |
 | 404 | Counted as failed, loop continues | No image for that id; nothing to store |
 | 5xx, timeout, bad body | Counted as failed, loop continues | One bad answer should not stop the other 800 |
@@ -59,7 +59,7 @@ ApiClient::characters(page: 1) via the list cache ..... info.count, the highest 
 for id = 1 .. count
     Cache::has("rickandmorty:avatar:{id}") ? skip (count it)
     else ApiClient::avatar(id)
-         ok          -> Cache::put(key, bytes, avatar_cache_seconds); Sleep 1 s
+         ok          -> Cache::put(key, bytes, avatar_cache_seconds); Sleep 0.5 s
          NotFound    -> failed++, continue
          RateLimited -> print "stopped at id N", exit 1
          ApiException-> failed++, continue

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 /**
  * All communication with the Rick and Morty REST API (https://rickandmortyapi.com/documentation).
  *
- * Three public methods, one private request helper. Every answer is mapped to our own objects
+ * Four public methods, one private request helper. Every answer is mapped to our own objects
  * and every failure to our own exceptions, so nothing outside this folder knows about HTTP.
  */
 final class ApiClient

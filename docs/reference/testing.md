@@ -1,7 +1,7 @@
 # Testing
 
 ```bash
-php artisan test                                   # 69 tests (1 skipped), no network
+php artisan test                                   # 83 tests (1 skipped), no network
 RM_LIVE_TEST=1 php artisan test --filter LiveApiTest   # one test against the real API
 vendor/bin/pint --test                             # code style
 ```
@@ -14,6 +14,7 @@ vendor/bin/pint --test                             # code style
 | Feature | `tests/Feature/CharacterListTest.php` | List page, pagination, invalid page values. |
 | Feature | `tests/Feature/CharacterSearchTest.php` | Filters forwarded, invalid values rejected, output escaped, page links keep validated filters only. |
 | Feature | `tests/Feature/CharacterShowTest.php` | Detail page, episodes in one call, 404 for unknown or non-numeric ids. |
+| Feature | `tests/Feature/AvatarTest.php` | Images served with long cache headers and an ETag; 304 on match; API called once; failures not cached; both pages point at `/avatars/`. |
 | Feature | `tests/Feature/ResilienceTest.php` | Friendly 503 pages; cache hits, cache keys, failures not cached. |
 | Live | `tests/Feature/LiveApiTest.php` | Skipped unless `RM_LIVE_TEST=1`. |
 
@@ -26,9 +27,10 @@ only the network is replaced.
 
 ## IDs
 
-Each test method name carries an ID (T1, L3, S4, D2, E5b ...) that matches the row in
-`docs/tasks/2026-10-17_build-encyclopedia/test-cases.md`, the list that was written and reviewed
-before the tests were coded. Tests were committed red before the code that makes them green.
+Each test method name carries an ID (T1, L3, S4, D2, E5b, A3, P7 ...) that matches a row in
+`docs/tasks/2026-10-17_build-encyclopedia/test-cases.md` or
+`docs/tasks/2026-10-28_proxy-avatars/test-cases.md`, lists written and reviewed before the tests
+were coded. Tests were committed red before the code that makes them green.
 
 ## The test cache serializes on purpose
 

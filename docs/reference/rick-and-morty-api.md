@@ -9,6 +9,7 @@ https://rickandmortyapi.com/documentation. Base URL: `https://rickandmortyapi.co
 |---|---|
 | `GET /character?page=N&name=&status=&species=&type=&gender=` | `{"info": {"count", "pages", "next", "prev"}, "results": [character, ...]}`, 20 per page, 826 characters over 42 pages |
 | `GET /character/{id}` | one character object |
+| `GET /character/avatar/{id}.jpeg` | the character's image, `image/jpeg`, same cache headers as the JSON |
 | `GET /episode/{id},{id},...` | a **list** of episode objects when several ids are given, a **single object** when one id is given |
 
 Character fields: `id, name, status, species, type, gender, origin{name,url}, location{name,url}, image, episode[url...], url, created`.
@@ -35,5 +36,8 @@ Documented filter values: `status` = alive, dead, unknown; `gender` = female, ma
 - The limit is real: during ordinary browsing on 2026-10-17 (a few dozen requests within a few
   minutes from one IP) the API answered `429` for the list endpoint. It cleared within a minute.
   No `Retry-After` header could be captured.
+- Images count too. On 2026-10-28, hard-reloading the list page a few dozen times from one browser
+  made the CDN answer `429` to the image revalidations (the browser had sent `If-None-Match` and
+  was getting 304s until then). Served through the app since.
 - Consequence: a server-side cache keeps our request volume low, and an HTTP 429 is shown to the
   visitor as "try again shortly" rather than retried, since retrying a rate limit makes it worse.

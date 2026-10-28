@@ -1,6 +1,6 @@
 # Plan: serve character images through the app
 
-Status: **planned** (2026-10-28). Companion file: [test-cases.md](test-cases.md).
+Status: **done** (2026-10-28). Kept as the record of how the work was planned. Companion file: [test-cases.md](test-cases.md).
 
 ## Why
 
@@ -18,13 +18,13 @@ lifetime and serves it with long cache headers. The browser then talks only to t
 
 ## Exit criteria
 
-- [ ] `/avatars/1` returns `image/jpeg` with `Cache-Control: public, max-age=7776000, immutable` and an `ETag`.
-- [ ] A second request for the same id makes no API request (served from the cache).
-- [ ] A conditional request with the matching `ETag` gets 304 and makes no API request.
-- [ ] The list and detail pages point every `<img>` at `/avatars/{id}`, never at the API.
-- [ ] A 429, 5xx or connection failure upstream gives the existing 503 page and caches nothing.
-- [ ] `/avatars/abc` and an unknown id are 404.
-- [ ] `php artisan test` green; Pint clean; README and `docs/reference` updated.
+- [x] `/avatars/1` returns `image/jpeg` with `Cache-Control: public, max-age=7776000, immutable` and an `ETag`.
+- [x] A second request for the same id makes no API request (served from the cache).
+- [x] A conditional request with the matching `ETag` gets 304 and makes no API request.
+- [x] The list and detail pages point every `<img>` at `/avatars/{id}`, never at the API.
+- [x] A 429, 5xx or connection failure upstream gives the existing 503 page and caches nothing.
+- [x] `/avatars/abc` and an unknown id are 404.
+- [x] `php artisan test` green; Pint clean; README and `docs/reference` updated.
 
 ## Decisions
 

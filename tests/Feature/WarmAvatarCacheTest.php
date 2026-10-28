@@ -87,7 +87,7 @@ final class WarmAvatarCacheTest extends TestCase
         $this->assertSame(self::JPEG, Cache::get('rickandmorty:avatar:3'));
     }
 
-    public function test_w6_the_pause_follows_each_real_fetch_and_no_cache_hit(): void
+    public function test_w6_the_half_second_pause_follows_each_real_fetch_and_no_cache_hit(): void
     {
         $this->fakeApi(count: 3);
         Cache::put('rickandmorty:avatar:1', self::JPEG, 60);
@@ -95,7 +95,7 @@ final class WarmAvatarCacheTest extends TestCase
         $this->artisan('avatars:warm')->assertExitCode(0);
 
         Sleep::assertSleptTimes(2);
-        Sleep::assertSlept(fn (CarbonInterval $pause) => $pause->totalSeconds === 1.0, times: 2);
+        Sleep::assertSlept(fn (CarbonInterval $pause) => $pause->totalMilliseconds === 500.0, times: 2);
     }
 
     // ---------------------------------------------------------------- helpers

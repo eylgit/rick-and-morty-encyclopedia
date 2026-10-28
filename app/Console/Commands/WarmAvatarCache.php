@@ -13,17 +13,17 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Sleep;
 
 /**
- * Fetches every character image into the cache, one a second, so no visitor ever pays for a
+ * Fetches every character image into the cache, two a second, so no visitor ever pays for a
  * cold image and the API never sees a burst. Safe to run again: cached ids are skipped.
  */
 final class WarmAvatarCache extends Command
 {
     protected $signature = 'avatars:warm';
 
-    protected $description = 'Fetch every character image into the cache, one a second';
+    protected $description = 'Fetch every character image into the cache, two a second';
 
-    /** Seconds between requests to the API. The limiter trips on bursts, not on a trickle. */
-    private const PAUSE_SECONDS = 1;
+    /** Milliseconds between requests to the API. The limiter trips on bursts, not on a trickle. */
+    private const PAUSE_MILLISECONDS = 500;
 
     public function handle(ApiClient $api): int
     {
@@ -35,7 +35,7 @@ final class WarmAvatarCache extends Command
             fn () => $api->characters(page: 1),
         )->count;
 
-        $this->line("Warming {$count} images, one a second. Already cached ids are skipped.");
+        $this->line("Warming {$count} images, two a second. Already cached ids are skipped.");
 
         $fetched = 0;
         $cached = 0;
@@ -65,7 +65,7 @@ final class WarmAvatarCache extends Command
             }
 
             // After every request that reached the API, whether it succeeded or not.
-            Sleep::for(self::PAUSE_SECONDS)->seconds();
+            Sleep::for(self::PAUSE_MILLISECONDS)->milliseconds();
         }
 
         $this->summary($fetched, $cached, $failed);

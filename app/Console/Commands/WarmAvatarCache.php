@@ -53,6 +53,7 @@ final class WarmAvatarCache extends Command
             try {
                 Cache::put($key, $api->avatar($id), config('rickandmorty.avatar_cache_seconds'));
                 $fetched++;
+                $this->line("id {$id} of {$count}: fetched");
             } catch (RateLimitedException) {
                 $this->error("Stopped at id {$id}: the API is rate-limiting this application. Run again in a minute; it continues from here.");
                 $this->summary($fetched, $cached, $failed);

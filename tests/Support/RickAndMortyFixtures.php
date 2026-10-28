@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
+use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Support\Facades\Http;
+
 /** Canned API bodies in the exact shape https://rickandmortyapi.com returns. Shared by unit and feature tests. */
 trait RickAndMortyFixtures
 {
@@ -60,5 +63,14 @@ trait RickAndMortyFixtures
     protected function nothingHere(): array
     {
         return ['error' => 'There is nothing here'];
+    }
+
+    /** A stand-in for a JPEG. The client never inspects the bytes, only the Content-Type. */
+    protected const JPEG = "\xFF\xD8\xFF fake jpeg bytes";
+
+    /** The API's answer for an avatar image. */
+    protected function imageResponse(string $contentType = 'image/jpeg'): PromiseInterface
+    {
+        return Http::response(self::JPEG, 200, ['Content-Type' => $contentType]);
     }
 }

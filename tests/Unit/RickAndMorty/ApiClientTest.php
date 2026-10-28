@@ -266,6 +266,62 @@ final class ApiClientTest extends TestCase
         $this->client()->character(999999);
     }
 
+    // ---------------------------------------------------------------- A1-A5: avatar images
+
+    public function test_a1_avatar_requests_the_image_by_id(): void
+    {
+        Http::fake([self::BASE.'/character/avatar/1.jpeg' => $this->imageResponse()]);
+
+        $this->client()->avatar(1);
+
+        Http::assertSent(fn (Request $r) => $r->url() === self::BASE.'/character/avatar/1.jpeg');
+        Http::assertSentCount(1);
+    }
+
+    public function test_a2_avatar_returns_the_image_bytes_unchanged(): void
+    {
+        Http::fake([self::BASE.'/character/avatar/*' => $this->imageResponse()]);
+
+        $this->assertSame(self::JPEG, $this->client()->avatar(1));
+    }
+
+    public function test_a3_404_on_an_avatar_throws_not_found(): void
+    {
+        Http::fake([self::BASE.'/character/avatar/*' => Http::response('', 404)]);
+
+        $this->expectException(NotFoundException::class);
+
+        $this->client()->avatar(999999);
+    }
+
+    public function test_a4_429_on_an_avatar_throws_rate_limited(): void
+    {
+        Http::fake([self::BASE.'/character/avatar/*' => Http::response('', 429)]);
+
+        $this->expectException(RateLimitedException::class);
+
+        $this->client()->avatar(1);
+    }
+
+    #[DataProvider('badImageAnswers')]
+    public function test_a5_server_errors_and_non_image_bodies_throw_api_exception(callable $answer): void
+    {
+        Http::fake([self::BASE.'/character/avatar/*' => $answer()]);
+
+        $this->expectException(ApiException::class);
+
+        $this->client()->avatar(1);
+    }
+
+    public static function badImageAnswers(): array
+    {
+        return [
+            'HTTP 500' => [fn () => Http::response('', 500)],
+            'connection failure' => [fn () => Http::failedConnection('cURL error 28: Operation timed out')],
+            'HTML instead of an image' => [fn () => Http::response('<html>oops</html>', 200, ['Content-Type' => 'text/html'])],
+        ];
+    }
+
     // ---------------------------------------------------------------- helpers
 
     private function client(): ApiClient

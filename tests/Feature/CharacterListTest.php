@@ -92,6 +92,6 @@ final class CharacterListTest extends TestCase
 
         $response->assertSee('/characters/1', false);
         $response->assertSee('/characters/2', false);
-        $response->assertSee('https://rickandmortyapi.com/api/character/avatar/1.jpeg', false);
+        $response->assertSee('/avatars/1', false);   // images are served through the app
     }
 }

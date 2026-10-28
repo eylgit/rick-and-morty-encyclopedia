@@ -28,7 +28,7 @@ final class CharacterShowTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Rick Sanchez');
-        $response->assertSee('https://rickandmortyapi.com/api/character/avatar/1.jpeg', false);
+        $response->assertSee('/avatars/1', false);   // images are served through the app
         $response->assertSee('Human');          // species
         $response->assertSee('Alive');          // status
         $response->assertSee('Male');           // gender

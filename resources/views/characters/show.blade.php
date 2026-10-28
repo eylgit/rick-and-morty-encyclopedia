@@ -12,7 +12,7 @@
 
     <div class="sheet row g-0">
         <div class="col-12 col-md-4 col-lg-3 sheet-aside">
-            <img src="{{ $character->image }}" class="img-fluid rounded shadow-sm" alt="{{ $character->name }}">
+            <img src="{{ route('avatars.show', $character->id, absolute: false) }}" class="img-fluid rounded shadow-sm" alt="{{ $character->name }}">
         </div>
 
         <div class="col-12 col-md-8 col-lg-9 sheet-main">

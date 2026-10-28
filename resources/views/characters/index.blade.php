@@ -60,7 +60,7 @@
             @foreach ($result->characters as $character)
                 <div class="col">
                     <a href="{{ route('characters.show', $character->id) }}" class="card char-card h-100 text-decoration-none text-body">
-                        <img src="{{ $character->image }}" class="card-img-top" alt="{{ $character->name }}" loading="lazy">
+                        <img src="{{ route('avatars.show', $character->id, absolute: false) }}" class="card-img-top" alt="{{ $character->name }}" loading="lazy">
                         <div class="card-body">
                             <h2 class="h6 card-title mb-1">{{ $character->name }}</h2>
                             <p class="card-text small text-muted mb-0">

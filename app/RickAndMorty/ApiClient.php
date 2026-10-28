@@ -68,6 +68,25 @@ final class ApiClient
     }
 
     /**
+     * One character's image, as raw bytes for the caller to cache and serve.
+     * The API answers HTML on some failures; a body that is not an image is refused.
+     */
+    public function avatar(int $id): string
+    {
+        $response = $this->get("character/avatar/{$id}.jpeg");
+
+        if ($response->status() === 404) {
+            throw new NotFoundException("Avatar {$id} does not exist.");
+        }
+
+        if (! str_starts_with((string) $response->header('Content-Type'), 'image/')) {
+            throw new ApiException('The Rick and Morty API returned something that is not an image.');
+        }
+
+        return $response->body();
+    }
+
+    /**
      * Several episodes in one request: /episode/1,2,3.
      *
      * @param  int[]  $ids
